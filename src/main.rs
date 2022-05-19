@@ -7,6 +7,7 @@ use macroquad::prelude::*;
 use maptools::{new_map, randomize_map, Map, TileType};
 use procgen::bsp_tree::BSPTreeGenerator;
 use procgen::cellular_automata::CellularAutomataGenerator;
+use procgen::maze_with_rooms::MazeGenerator;
 use procgen::room_placement::RoomPlacementGenerator;
 use procgen::rwalk::RandomWalkGenerator;
 use procgen::tunneling::TunnelingGenerator;
@@ -165,6 +166,9 @@ async fn main() {
         if is_key_pressed(KeyCode::Key5) {
             map = RoomPlacementGenerator::generate_map();
         }
+        if is_key_pressed(KeyCode::Key6) {
+            map = MazeGenerator::generate_map();
+        }
         if is_key_pressed(KeyCode::Escape) {
             break;
         }
@@ -187,6 +191,9 @@ async fn main() {
             }
             if is_key_down(KeyCode::Key5) {
                 map = RoomPlacementGenerator::generate_map();
+            }
+            if is_key_down(KeyCode::Key6) {
+                map = MazeGenerator::generate_map();
             }
         }
 
