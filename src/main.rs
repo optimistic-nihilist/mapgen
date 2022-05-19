@@ -1,13 +1,13 @@
-use std::collections::HashMap;
-
+mod fundamentals;
+mod maptools;
+mod procgen;
+mod utils;
+use fundamentals::{COLS, ROWS, TILESIZE, WINH, WINW};
 use macroquad::prelude::*;
-
-pub const WINW: i32 = 1280;
-pub const WINH: i32 = 800;
-pub const TILESIZE: i32 = 16;
-pub const NUM_SPRITES: usize = 3;
-pub const COLS: i32 = WINW / TILESIZE;
-pub const ROWS: i32 = WINH / TILESIZE;
+use maptools::{new_map, randomize_map, Map, TileType};
+use procgen::bsp_tree::BSPTreeGenerator;
+use procgen::tunneling::TunnelingGenerator;
+use std::collections::HashMap;
 
 fn window_conf() -> Conf {
     Conf {
@@ -18,23 +18,6 @@ fn window_conf() -> Conf {
         window_height: WINH,
         ..Default::default()
     }
-}
-
-fn randomize_map() -> Map {
-    let mut map = [[0; COLS as usize]; ROWS as usize];
-    for row in 0..ROWS {
-        for col in 0..COLS {
-            map[row as usize][col as usize] = rand::gen_range::<i32>(0, 2);
-        }
-    }
-    map
-}
-
-#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
-enum TileType {
-    Wall,
-    Floor,
-    Hero,
 }
 
 fn render_map(tiles: &HashMap<TileType, DrawTextureParams>, texture: Texture2D, m: &Map) {
@@ -48,16 +31,14 @@ fn render_map(tiles: &HashMap<TileType, DrawTextureParams>, texture: Texture2D, 
             };
             draw_texture_ex(
                 texture,
-                col as f32 * 16.0,
-                row as f32 * 16.0,
+                col as f32 * TILESIZE as f32,
+                row as f32 * TILESIZE as f32,
                 WHITE,
                 tiles.get(&curr_type).unwrap().clone(),
             );
         }
     }
 }
-
-type Map = [[i32; COLS as usize]; ROWS as usize];
 
 fn render_help_full(params: TextParams) {
     const HELP_TEXT: [&str; 4] = [
@@ -87,15 +68,30 @@ async fn main() {
 
     // setup DrawTextureParams for individual tile types
     let tile_wall: DrawTextureParams = DrawTextureParams {
-        source: Some(Rect::new(0.0, 0.0, 16.0, 16.0)),
+        source: Some(Rect::new(
+            0.0 * TILESIZE as f32,
+            0.0,
+            TILESIZE as f32,
+            TILESIZE as f32,
+        )),
         ..Default::default()
     };
     let tile_floor: DrawTextureParams = DrawTextureParams {
-        source: Some(Rect::new(16.0, 0.0, 16.0, 16.0)),
+        source: Some(Rect::new(
+            1.0 * TILESIZE as f32,
+            0.0,
+            TILESIZE as f32,
+            TILESIZE as f32,
+        )),
         ..Default::default()
     };
     let tile_hero: DrawTextureParams = DrawTextureParams {
-        source: Some(Rect::new(32.0, 0.0, 16.0, 16.0)),
+        source: Some(Rect::new(
+            2.0 * TILESIZE as f32,
+            0.0,
+            TILESIZE as f32,
+            TILESIZE as f32,
+        )),
         ..Default::default()
     };
 
@@ -114,8 +110,8 @@ async fn main() {
         ..Default::default()
     };
 
-    // create initial map
-    let mut map = randomize_map();
+    // create initial empty map
+    let mut map = new_map(TileType::Floor);
 
     let mut show_help = true;
     let mut show_fps = true;
@@ -145,8 +141,17 @@ async fn main() {
         if is_key_pressed(KeyCode::F) {
             show_fps = !show_fps;
         }
+        if is_key_pressed(KeyCode::C) {
+            map = new_map(TileType::Floor);
+        }
         if is_key_pressed(KeyCode::R) {
             map = randomize_map();
+        }
+        if is_key_pressed(KeyCode::Key1) {
+            map = TunnelingGenerator::generate_map(6, 16, 30);
+        }
+        if is_key_pressed(KeyCode::Key2) {
+            map = BSPTreeGenerator::generate_map();
         }
         if is_key_pressed(KeyCode::Escape) {
             break;
@@ -155,6 +160,12 @@ async fn main() {
         if is_key_down(KeyCode::LeftShift) {
             if is_key_down(KeyCode::R) {
                 map = randomize_map();
+            }
+            if is_key_down(KeyCode::Key1) {
+                map = TunnelingGenerator::generate_map(6, 16, 30);
+            }
+            if is_key_down(KeyCode::Key2) {
+                map = BSPTreeGenerator::generate_map();
             }
         }
 
