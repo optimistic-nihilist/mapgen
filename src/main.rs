@@ -6,6 +6,7 @@ use fundamentals::{COLS, ROWS, TILESIZE, WINH, WINW};
 use macroquad::prelude::*;
 use maptools::{new_map, randomize_map, Map, TileType};
 use procgen::bsp_tree::BSPTreeGenerator;
+use procgen::cellular_automata::CellularAutomataGenerator;
 use procgen::rwalk::RandomWalkGenerator;
 use procgen::tunneling::TunnelingGenerator;
 use std::collections::HashMap;
@@ -157,6 +158,9 @@ async fn main() {
         if is_key_pressed(KeyCode::Key3) {
             map = RandomWalkGenerator::generate_map();
         }
+        if is_key_pressed(KeyCode::Key4) {
+            map = CellularAutomataGenerator::generate_map();
+        }
         if is_key_pressed(KeyCode::Escape) {
             break;
         }
@@ -173,6 +177,9 @@ async fn main() {
             }
             if is_key_down(KeyCode::Key3) {
                 map = RandomWalkGenerator::generate_map();
+            }
+            if is_key_down(KeyCode::Key4) {
+                map = CellularAutomataGenerator::generate_map();
             }
         }
 
