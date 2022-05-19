@@ -24,11 +24,12 @@ pub fn randomize_map() -> Map {
     map
 }
 
+#[derive(Debug)]
 pub struct Rect {
-    x: i32,
-    y: i32,
-    w: i32,
-    h: i32,
+    pub x: i32,
+    pub y: i32,
+    pub w: i32,
+    pub h: i32,
 }
 
 #[derive(Copy, Clone, Debug)]
