@@ -59,6 +59,23 @@ fn render_map(tiles: &HashMap<TileType, DrawTextureParams>, texture: Texture2D, 
 
 type Map = [[i32; COLS as usize]; ROWS as usize];
 
+fn render_help_full(params: TextParams) {
+    const HELP_TEXT: [&str; 4] = [
+        "[r] - randomize map  [1] - tunneling       [5] - room placement",
+        "[c] - clear map      [2] - BSP             [6] - maze with rooms",
+        "[f] - toggle FPS     [3] - random walk     [LShift+num] - frenzy",
+        "[h] - toggle help    [4] - cell. automata  [ESC] - quit",
+    ];
+    for (idx, row) in HELP_TEXT.iter().enumerate() {
+        draw_text_ex(
+            row,
+            10.0,
+            WINH as f32 - (HELP_TEXT.len() as f32 - 1.0 - idx as f32) * 19.0 - 16.0,
+            params,
+        );
+    }
+}
+
 #[macroquad::main(window_conf)]
 async fn main() {
     // seed PRNG
@@ -100,19 +117,45 @@ async fn main() {
     // create initial map
     let mut map = randomize_map();
 
+    let mut show_help = true;
+    let mut show_fps = true;
+
     // main loop
     loop {
         let bg = Color::from_rgba(40, 40, 40, 255);
         clear_background(bg);
 
         render_map(&tiles, texture, &map);
-        draw_text_ex(&format!("FPS: {}", get_fps()), 16.0, 32.0, font_params);
 
-        if is_key_down(KeyCode::R) {
+        if show_fps {
+            draw_text_ex(&format!("FPS: {}", get_fps()), 10.0, 26.0, font_params);
+        }
+
+        if show_help {
+            render_help_full(font_params);
+        } else {
+            let mut gray_text = font_params.clone();
+            gray_text.color = Color::from_rgba(160, 160, 160, 255);
+            draw_text_ex("[h]", 10.0, WINH as f32 - 16.0, gray_text);
+        }
+
+        if is_key_pressed(KeyCode::H) {
+            show_help = !show_help;
+        }
+        if is_key_pressed(KeyCode::F) {
+            show_fps = !show_fps;
+        }
+        if is_key_pressed(KeyCode::R) {
             map = randomize_map();
         }
-        if is_key_down(KeyCode::Escape) {
+        if is_key_pressed(KeyCode::Escape) {
             break;
+        }
+
+        if is_key_down(KeyCode::LeftShift) {
+            if is_key_down(KeyCode::R) {
+                map = randomize_map();
+            }
         }
 
         next_frame().await
