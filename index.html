@@ -1,0 +1,47 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>mapgen</title>
+    <style>
+        html,
+        body {
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: absolute;
+            background: rgb(40,40,40);
+            z-index: 0;
+        }
+        #content {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        canvas {
+            margin: 10px;
+            width: 1120;
+            height: 640;
+        }
+        a {
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content">
+        <a href="https://github.com/optimistic-nihilist/mapgen">mapgen</a>
+        <canvas id="glcanvas" tabindex='1'></canvas>
+    </div>
+    <!-- Minified and statically hosted version of https://github.com/not-fl3/macroquad/blob/master/js/mq_js_bundle.js -->
+    <script src="https://not-fl3.github.io/miniquad-samples/mq_js_bundle.js"></script>
+    <script>load("./assets/mapgen.wasm");</script> <!-- Your compiled wasm file -->
+</body>
+
+</html>
