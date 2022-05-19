@@ -1,7 +1,6 @@
 pub const WINW: i32 = 1280;
 pub const WINH: i32 = 800;
 pub const TILESIZE: i32 = 16;
-pub const NUM_SPRITES: usize = 3;
 pub const COLS: i32 = WINW / TILESIZE;
 pub const ROWS: i32 = WINH / TILESIZE;
 

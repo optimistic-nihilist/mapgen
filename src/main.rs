@@ -15,7 +15,7 @@ use std::collections::HashMap;
 
 fn window_conf() -> Conf {
     Conf {
-        window_title: "macroquad-test".to_owned(),
+        window_title: "mapgen".to_owned(),
         fullscreen: false,
         window_resizable: true,
         window_width: WINW,
@@ -117,6 +117,9 @@ async fn main() {
     // create initial empty map
     let mut map = new_map(TileType::Floor);
 
+    let mut measurement_start_time = get_time();
+    let mut current_fps = get_fps();
+
     let mut show_help = true;
     let mut show_fps = true;
 
@@ -128,7 +131,7 @@ async fn main() {
         render_map(&tiles, texture, &map);
 
         if show_fps {
-            draw_text_ex(&format!("FPS: {}", get_fps()), 10.0, 26.0, font_params);
+            draw_text_ex(&format!("FPS: {}", current_fps), 10.0, 26.0, font_params);
         }
 
         if show_help {
@@ -197,6 +200,11 @@ async fn main() {
             }
         }
 
+        // update FPS counter roughly every 0.5 second
+        if get_time() - measurement_start_time > 0.5 {
+            measurement_start_time = get_time();
+            current_fps = get_fps();
+        }
         next_frame().await
     }
 }
